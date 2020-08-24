@@ -5,6 +5,7 @@ const cors = require('cors')
 const bodyParser = require('body-parser')
 const fs = require('fs')
 const fileUpload = require('express-fileupload')
+const e = require('express')
 app.use(cors())
 app.use(fileUpload())
 app.use(bodyParser.json())
@@ -23,7 +24,10 @@ app.get('/lessons/:grade', cors(corsOptions), async (req, res) => {
   const { grade } = req.params
   try {
     const lessons = await pool.query(
-      `SELECT * FROM lesson WHERE grade = '${grade}'`,
+      `SELECT lesson.*, a.first, a.last, a.email, a.phone FROM lesson 
+      JOIN "user" as a
+      ON lesson.author_id = a.id      
+      WHERE grade = '${grade}'`,
     )
 
     res.setHeader('Content-Type', 'application/json')
@@ -33,6 +37,43 @@ app.get('/lessons/:grade', cors(corsOptions), async (req, res) => {
   }
 })
 
+
+app.get('/search/lesson', cors(corsOptions), async (req, res) => {
+  const word = req.query.word
+  try {
+    const lessons = await pool.query(
+      `SELECT lesson.*, a.first, a.last, a.email, a.phone FROM lesson 
+      JOIN "user" as a
+      ON lesson.author_id = a.id WHERE LOWER(description) like '%${word.toLowerCase()}%' or LOWER(title) like '%${word.toLowerCase()}%' or LOWER(notes) like '%${word.toLowerCase()}%'`,
+    )
+
+    res.setHeader('Content-Type', 'application/json')
+    res.send(lessons.rows)
+  } catch (err) {
+    console.error(err.message)
+  }
+})
+
+
+//GET lessons by category
+app.get('/lessons/cat/:cat', cors(corsOptions), async (req, res) => {
+  const { cat } = req.params
+  try {
+    const lessons = await pool.query(
+      `SELECT lesson.*, a.first, a.last, a.email, a.phone FROM lesson 
+      JOIN "user" as a
+      ON lesson.author_id = a.id WHERE category = '${cat}'`,
+    )
+
+    res.setHeader('Content-Type', 'application/json')
+    res.send(lessons.rows)
+  } catch (err) {
+    console.error(err.message)
+  }
+})
+
+
+//get file related to lesson
 app.get('/lesson/:id/items', cors(corsOptions), async (req, res) => {
   const { id } = req.params
   try {
@@ -46,21 +87,29 @@ app.get('/lesson/:id/items', cors(corsOptions), async (req, res) => {
   }
 })
 
+//post lesson
 app.post('/lesson', cors(corsOptions), async (req, res) => {
-  const { title, description, grade, email } = req.body
+  const { title, description, grade, email, category, notes, first, last, phone } = req.body
 
   try {
     const author = await pool.query(
       `SELECT * FROM "user" WHERE email = '${email.toLowerCase()}'`,
     )
 
-    if (author.rows.length > 0) {
+    let userid;
+    if (author.rows.length == 0) {
       console.log(req.body)
-      const lesson = await pool.query(`INSERT INTO "lesson" (title, description, grade, author_id)
-      VALUES ('${title}', '${description}', '${grade}', ${author.rows[0].id} ) RETURNING *;`)
-      res.setHeader('Content-Type', 'application/json')
-      res.send(lesson.rows[0].id)
+      const reg = await pool.query(`INSERT INTO "user" (first, last, phone, email)
+      VALUES ($1, $2, $3, $4) RETURNING *;`, [first, last, phone, email])
+      userid = reg.rows[0].id
+    } else {
+      userid = author.rows[0].id
     }
+
+    const lesson = await pool.query(`INSERT INTO "lesson" (title, description, grade, category, notes, author_id)
+    VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;`, [title, description, grade, category, notes, userid])
+    res.setHeader('Content-Type', 'application/json')
+    res.send(lesson.rows[0].id)
 
   } catch (err) {
     console.error(err.message)

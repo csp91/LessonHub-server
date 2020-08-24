@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS "user" (
   id           bigserial    PRIMARY KEY CHECK (id > 0),
   first        varchar(64)  NOT NULL,
   last         varchar(64)  NOT NULL,
+  phone	       varchar(64)	NULL,
   email        varchar(128) UNIQUE NOT NULL
 );
 
@@ -23,12 +24,25 @@ CREATE TYPE grade_type AS ENUM (
   '12'
 );
 
+CREATE TYPE cat_type AS ENUM (
+  'English',
+  'Math',
+  'History',
+  'Science',
+  'Technology',
+  'Fitness',
+  'SS',
+  'FL'
+);
+
 CREATE TABLE IF NOT EXISTS "lesson" (
   id            bigserial        PRIMARY KEY CHECK (id > 0),
-  title 	    	varchar		    	 NOT NULL,
+  title 	    varchar		     NOT NULL,
   "description"	varchar          NOT NULL,
-  grade         grade_type       NOT NULL,
-  author_id   	bigint		    	 NOT NULL,
+  category		cat_type	     NOT NULL,
+  grade         grade_type       NULL,
+  notes		    text			 NULL,
+  author_id   	bigint		     NOT NULL,
   created_at    timestamp        DEFAULT now(),
 	
   FOREIGN KEY (author_id) REFERENCES "user"(id) ON DELETE CASCADE
@@ -37,8 +51,8 @@ CREATE TABLE IF NOT EXISTS "lesson" (
 CREATE TABLE IF NOT EXISTS item (
   id            bigserial        PRIMARY KEY CHECK (id > 0),
   lesson_id     bigserial        NOT NULL,
-  "name" 	      varchar	    		 NULL,
-  "file"	    	bytea		      	 NOT NULL,
+  "name" 	      varchar	     NULL,
+  "file"	    	bytea		 NOT NULL,
 	
   FOREIGN KEY (lesson_id) REFERENCES "lesson"(id) ON DELETE CASCADE
 );
