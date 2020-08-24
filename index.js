@@ -97,7 +97,7 @@ app.post('/lesson', cors(corsOptions), async (req, res) => {
 
   try {
     const author = await pool.query(
-      `SELECT * FROM "user" WHERE email = '${email.toLowerCase()}'`,
+      `SELECT * FROM "user" WHERE LOWER(email) = '${email.toLowerCase()}'`,
     )
 
     let userid;
