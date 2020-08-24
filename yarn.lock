@@ -757,6 +757,18 @@ negotiator@0.6.2:
   resolved "https://registry.yarnpkg.com/negotiator/-/negotiator-0.6.2.tgz#feacf7ccf525a77ae9634436a64883ffeca346fb"
   integrity sha512-hZXc7K2e+PgeI1eDBe/10Ard4ekbfrrqG8Ep+8Jmf4JID2bNg7NvCPOZN+kfF574pFQI7mum2AUqDidoKqcTOw==
 
+node-bin-setup@^1.0.0:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/node-bin-setup/-/node-bin-setup-1.0.6.tgz#4b5c9bb937ece702d7069b36ca78af4684677528"
+  integrity sha512-uPIxXNis1CRbv1DwqAxkgBk5NFV3s7cMN/Gf556jSw6jBvV7ca4F9lRL/8cALcZecRibeqU+5dFYqFFmzv5a0Q==
+
+node@^14.8.0:
+  version "14.8.0"
+  resolved "https://registry.yarnpkg.com/node/-/node-14.8.0.tgz#c9a165d8130c9901793f834113c5bbb10c308778"
+  integrity sha512-F3hndEpkL32EaxbNawsUdMjQfPGAWvIlK8lMdQykI4Rp3dw/p9X1e0OFa0Tyvz1+hGefgT6lQWJ8wj1g/YvO9g==
+  dependencies:
+    node-bin-setup "^1.0.0"
+
 nodemon@^2.0.4:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/nodemon/-/nodemon-2.0.4.tgz#55b09319eb488d6394aa9818148c0c2d1c04c416"

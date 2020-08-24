@@ -1,3 +1,4 @@
+const path = require('path')
 const express = require('express')
 const app = express()
 const pool = require('./db')
@@ -6,9 +7,12 @@ const bodyParser = require('body-parser')
 const fs = require('fs')
 const fileUpload = require('express-fileupload')
 const e = require('express')
+let port = process.env.PORT || 8080
 app.use(cors())
 app.use(fileUpload())
 app.use(bodyParser.json())
+
+const publicPath = path.join(__dirname)
 
 var corsOptions = {
   origin: 'http://localhost:3000',
@@ -150,6 +154,6 @@ app.post('/upload', (req, res) => {
 })
 
 
-app.listen(8080, () => {
+app.listen(port, () => {
   console.log('listening on port 8080')
 })
